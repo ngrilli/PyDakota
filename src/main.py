@@ -57,12 +57,13 @@ prefactor_y_simulated = 1.0
 type_of_solver = 'Nelder-Mead'
 
 # name of the parameters to be substituted in the template file
-# and initial values for the optimization
+# and initial values and bounds for the optimization
 # in the template file parameters for optimization appear as {name_of_parameter}
 # and are substituted by a number into the simulation input file
 # at each iteration of the algorithm
 opt_variables = ['init_dislo','hard_rate']
 init_variables = np.array([20.0,0.04])
+bnds_variables = np.array([(0, None), (0, None)])
 
 # end parameters that must be set #
 ###################################

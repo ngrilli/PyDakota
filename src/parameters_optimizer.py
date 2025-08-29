@@ -19,7 +19,7 @@ class Parameters_Optimizer:
         
     # find optimal parameters
     def find_optimal_parameters(self):
-        risultato = minimize(self.calc_residual,self.init_variables,method=self.type_of_solver,options={'disp': True})
+        risultato = minimize(self.calc_residual,self.init_variables,method=self.type_of_solver,options={'disp': True}) # add bounds
         return risultato
         
     # calculate residual
