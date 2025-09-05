@@ -83,7 +83,7 @@ ms = MOOSE_Simulation(input_file_name,template_file_name,name_of_simulation_cmd,
 exp = Experiment_Comp(output_file_name,experiment_file,name_exp,name_sim,prefactors_exp_xy,prefactors_sim_xy,figure_file_name)
 
 # create a parameters optimizer
-po = Parameters_Optimizer(ms,exp,init_variables,type_of_solver)
+po = Parameters_Optimizer(ms,exp,init_variables,bnds_variables,type_of_solver)
 
 # launch optimization
 final_result = po.find_optimal_parameters()

@@ -1,4 +1,5 @@
 # Nicolò Grilli
+# Wan Wan Mohammad
 # University of Bristol
 # 10 Aprile 2022
 
@@ -11,10 +12,11 @@ from experiment_comp import Experiment_Comp
 
 class Parameters_Optimizer:
 
-    def __init__(self,simulation,experiment,init_variables,type_of_solver):
+    def __init__(self,simulation,experiment,init_variables,bnds_variables,type_of_solver):
         self.simulation = simulation # this is a MOOSE_Simulation object
         self.experiment = experiment # this is a Experiment_Comp object
         self.init_variables = init_variables
+        self.bnds_variables = bnds_variables
         self.type_of_solver = type_of_solver
         
     # find optimal parameters
