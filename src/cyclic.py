@@ -20,13 +20,18 @@ class Cyclic(Experiment_Comp)
     def max_stress(self):
         self.max_stress_array = np.zeros(shape=(self.number_of_cycles))
         self.min_stress_array = np.zeros(shape=(self.number_of_cycles))
-        
+        self.cycle_id = np.floor(self.sim_x_data / self.cycle_period).astype(int)
+        for i in range(self.number_of_cycles):
+            mask = cycle_id == i
+            sigma_cycle = self.sim_y_data[mask]
+            self.max_stress_array[i] = np.max(sigma_cycle)
+            self.min_stress_array[i] = np.min(sigma_cycle)
         return 1
 
     # calculate strain with triangular time dependence
-    def triangular_strain(self, strain_rate):
+    def triangular_strain(self):
         self.strain = np.zeros(shape=(self.number_of_cycles))
-        amplitude_cumulative = strain_rate * self.cycle_period
+        amplitude_cumulative = self.strain_rate * self.cycle_period
         for i in len(self.sim_x_data):
             phase = (self.sim_x_data[i] % self.cycle_period) / self.cycle_period
             if (phase < 0.25):
@@ -42,6 +47,16 @@ class Cyclic(Experiment_Comp)
         A = np.vstack([x, np.ones_like(x)]).T
         m, b = np.linalg.lstsq(A, y, rcond=None)[0]
         return float(m), float(b)
+
+    # calculate Young's modulus for reverse and forward cycles
+    def young_modulus(self):
+        # TO DO, use np.argmax
+        return 1
+        
+    # calculate yield point
+    def yield_point(self):
+        # TO DO
+        return 1
 
     # calculate the difference between experiment and simulation: override
     def calc_residual(self):
@@ -65,6 +80,9 @@ class Cyclic(Experiment_Comp)
         self.exp_y_interp_onto_sim = exp_y_interp_onto_sim
         # calculate total number of cycles: assume x data is time
         self.number_of_cycles = np.floor(sim_x_data.max() / self.cycle_period)
+        # calculate strain
+        self.triangular_strain()
         # calculate max stress (positive/negative)
         self.max_stress()
+        # calculate Young's modulus
         return 1
