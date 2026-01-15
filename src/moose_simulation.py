@@ -35,6 +35,6 @@ class MOOSE_Simulation:
             filedata = filedata.replace(temp_string_to_replace,str(x[i]))
         # Write the modified input file
         with open(self.input_file_name,'w') as file:
-            file.write(filedata)	
+            file.write(filedata)
         return 1
 

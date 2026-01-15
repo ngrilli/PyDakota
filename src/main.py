@@ -65,6 +65,9 @@ opt_variables = ['init_dislo','hard_rate']
 init_variables = np.array([20.0,0.04])
 bnds_variables = np.array([(0, None), (0, None)])
 
+# calibration for cyclic data using backstress and effective stress
+cyclic = False
+
 # end parameters that must be set #
 ###################################
 
