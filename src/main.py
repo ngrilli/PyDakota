@@ -54,7 +54,17 @@ prefactor_x_simulated = 0.2230 / 60.0
 prefactor_y_simulated = 1.0
 
 # type of scipy solver
+# Nelder-Mead (default) and Powell are derivative-free and now respect the
+# bounds below by clipping; both are robust for an expensive, noisy black-box
+# MOOSE objective with no analytic gradient. L-BFGS-B / TNC / SLSQP / trust-constr
+# also accept bounds but estimate gradients by finite differences (n+1 MOOSE
+# runs per gradient), which is unreliable on a noisy objective.
 type_of_solver = 'Nelder-Mead'
+
+# name of the CSV file that records every optimizer evaluation
+# (eval index, parameter values, residual, timestamp). Review it afterwards
+# to find good parameter combinations.
+log_file_name = 'optimization_history.csv'
 
 # name of the parameters to be substituted in the template file
 # and initial values and bounds for the optimization
@@ -63,7 +73,15 @@ type_of_solver = 'Nelder-Mead'
 # at each iteration of the algorithm
 opt_variables = ['init_dislo','hard_rate']
 init_variables = np.array([20.0,0.04])
-bnds_variables = np.array([(0, None), (0, None)])
+# physical bounds for each optimized parameter, matched BY POSITION to
+# opt_variables above. Each entry is (lower, upper); use None for an
+# unbounded side. These are now ACTUALLY ENFORCED: the parameter search is
+# constrained to this box, so set each range to the physically reasonable
+# range of that quantity for your material, e.g.
+#   [(1.0, 100.0),   # init_dislo : dislocation density
+#    (0.001, 0.5)]   # hard_rate  : hardening rate
+# The defaults below only impose positivity (>= 0) with no upper limit.
+bnds_variables = [(0.0, None), (0.0, None)]
 
 # calibration for cyclic data using backstress and effective stress
 cyclic = False
@@ -86,7 +104,7 @@ ms = MOOSE_Simulation(input_file_name,template_file_name,name_of_simulation_cmd,
 exp = Experiment_Comp(output_file_name,experiment_file,name_exp,name_sim,prefactors_exp_xy,prefactors_sim_xy,figure_file_name)
 
 # create a parameters optimizer
-po = Parameters_Optimizer(ms,exp,init_variables,bnds_variables,type_of_solver)
+po = Parameters_Optimizer(ms,exp,init_variables,bnds_variables,type_of_solver,log_file=log_file_name)
 
 # launch optimization
 final_result = po.find_optimal_parameters()

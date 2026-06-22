@@ -454,6 +454,10 @@ class Cyclic(Experiment_Comp):
     
     #calculate the difference between experiment and simulation: override
     def calc_residual(self):
+        # initialise per-evaluation sub-errors so that the early returns below
+        # (failed cycles / missing columns) log blank metrics instead of stale
+        # values left over from the previous optimizer iteration
+        self.last_metrics = {'rms_chi': None, 'rms_tau': None, 'rms_sigma': None}
         #read processed experimental dataframe
         exp_df = pd.read_csv(self.experiment_file)
         #read raw simulation dataframe
@@ -621,5 +625,8 @@ class Cyclic(Experiment_Comp):
         rms_chi = float(np.sqrt(np.mean((chi_exp[m] - chi_sim_on) ** 2))) if (chi_exp is not None and chi_sim_on is not None) else None
         rms_tau = float(np.sqrt(np.mean((tau_exp[m] - tau_sim_on) ** 2))) if (tau_exp is not None and tau_sim_on is not None) else None
 
+        # stash sub-errors so Parameters_Optimizer can log them as extra
+        # columns (all three keys always present -> stable log schema)
+        self.last_metrics = {'rms_chi': rms_chi, 'rms_tau': rms_tau, 'rms_sigma': rms_sigma}
         #return scalar objective to optimizer
         return total
